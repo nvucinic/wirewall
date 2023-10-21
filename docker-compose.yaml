@@ -1,0 +1,63 @@
+version: "3"
+
+networks:
+  inet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.40.0.0/24
+
+services:
+## Wireguard
+  wireguard:
+    depends_on:
+      - pihole
+    image: ghcr.io/linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+     - NET_ADMIN
+    environment:
+    - PUID=1000
+    - PGID=1000
+    - TZ=Europe/Amsterdam
+    #- SERVERURL=example.com #optional
+    - PEERS=1
+    - PEERDNS=172.40.0.100
+    - INTERNAL_SUBNET=10.13.13.0
+    - ALLOWEDIPS=0.0.0.0/0
+    volumes:
+    - ./config/wireguard:/config
+    - /lib/modules:/lib/modules
+    ports:
+      - 51820:51820/udp
+    sysctls:
+    - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+    networks:
+    - inet
+
+## Pi-Hole
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "81:80/tcp"
+      - "443:443/tcp"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - DNSMASQ_USER=root
+      - TZ=Europe/Amsterdam
+      - WEBPASSWORD=changeme
+      - DNSMASQ_LISTENING=local
+    volumes:
+      - './config/pi-hole/etc-pihole:/etc/pihole'
+      - './config/pi-hole/etc-dnsmasq.d:/etc/dnsmasq.d'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    networks:
+      inet:
+        ipv4_address: 172.40.0.100
