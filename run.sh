@@ -26,4 +26,4 @@ sudo add-apt-repository \
 # wirewall
 git clone https://github.com/nvucinic/wirewall.git &&
     cd wirewall &&
-    docker compose up -d
+    sudo docker compose up -d
