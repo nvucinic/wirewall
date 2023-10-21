@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # Prereqs and docker
 sudo apt-get update &&
