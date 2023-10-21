@@ -23,7 +23,7 @@ sudo add-apt-repository \
          containerd.io \
          docker-compose-plugin
 
-# wirehole
+# wirewall
 git clone https://github.com/nvucinic/wirewall.git &&
-    cd wirehole &&
+    cd wirewall &&
     docker compose up -d
